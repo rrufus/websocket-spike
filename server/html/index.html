@@ -1,0 +1,55 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+
+    <script type="text/javascript">
+        var myWebSocket;
+        var closed = false;
+        function myWebsocketStart() {
+            // Create new Web Socket
+            var ws = new WebSocket("ws://localhost:3000/websocket");
+
+            ws.onopen = function () {
+                // Web Socket is connected, send data using send()
+                ws.send("ping");
+                myWebSocket = ws;
+                var myTextArea = document.getElementById("textarea1");
+                myTextArea.value = "ping message sent";
+            };
+
+            ws.onmessage = function (evt) {
+                var myTextArea = document.getElementById("textarea1");
+                myTextArea.value = myTextArea.value + "\n" + evt.data + " message received"
+                if (evt.data == "pong") {
+                    setTimeout(function () {
+                        ws.send("ping");
+                        myTextArea.value = myTextArea.value + "\n" + "ping message sent"
+                    }, 2000);
+
+                }
+            };
+
+            ws.onclose = function () {
+                var myTextArea = document.getElementById("textarea1");
+                myTextArea.value = myTextArea.value + "\n" + "Connection closed";
+                closed = true;
+            };
+
+        }
+
+        function myWebsocketStop() {
+            myWebSocket.send("exit");
+        }
+
+    </script>
+
+</head>
+
+<body>
+    <button onclick="javascript:myWebsocketStart()">Start websocket!</button>
+    <button onclick="javascript:myWebsocketStop()">Stop websocket!</button>
+    <textarea style="height: 80vh" id="textarea1">MyTextArea</textarea>
+</body>
+
+</html>
